@@ -1,5 +1,18 @@
 extends layout
 
-block content
+block header
   h1= title
-  p Welcome to #{title}
+
+block content
+  div.panel.panel-default#panel-signin
+    div.panel-heading
+      h1.panel-title Please Sign In
+    div.panel-body
+      form
+        div.form-group
+          label(for="email").sr-only Email address
+          input(id="email", placeholder="Email address", required=true, autofocus="", type="email").form-control
+        div.form-group
+          label(for="password").sr-only Password
+          input(id="password", placeholder="Password", required=true, type="password").form-control
+        button(type=submit).btn.btn-primary.btn-block Sign in
