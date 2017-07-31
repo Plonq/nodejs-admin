@@ -4,7 +4,7 @@ PCP375 Web Database Applications - Assignment 2
 
 ### Github Repository ###
 
-https://github.com/Plonq/assignment2
+https://github.com/Plonq/nodejs-admin
 
 ### External Resources Used ###
 
