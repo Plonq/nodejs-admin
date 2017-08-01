@@ -9,3 +9,4 @@ https://github.com/Plonq/nodejs-admin
 ### External Resources Used ###
 
 * Sandstone Bootstrap Theme - https://bootswatch.com/
+* Request module - https://github.com/request/request
