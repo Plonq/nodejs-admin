@@ -32,7 +32,8 @@ router.get('/add', function(req, res, next) {
                         nav: 'movies',
                         title: 'MI. Movies Admin',
                         ratings: ratings,
-                        genres: genres
+                        genres: genres,
+                        errors: req.session.errors
                     });
                 }
             });
@@ -43,9 +44,20 @@ router.get('/add', function(req, res, next) {
 // Create new movie from POST
 router.post('/add', function(req, res, next) {
     // Validate
-    req.check('title', 'The title is too damn long!').length(5);
+    req.checkBody('title', 'The Title must be between 2 and 30 characters').isLength({min: 2, max: 30});
+    req.checkBody('poster_image', 'The Poster Image must be a valid URL').isURL();
+    req.checkBody('cover_image', 'The Cover Image must be a valid URL').isURL();
 
-
+    req.getValidationResult().then(function(result) {
+        if (!result.isEmpty()) {
+            // There are validation errors
+            req.session.errors = result.array();
+            res.redirect('/movies/add');
+            return;
+        }
+        req.session.message = 'Movie added successfully';
+        res.redirect('/movies');
+    });
 
     console.log(req.body);
 });
