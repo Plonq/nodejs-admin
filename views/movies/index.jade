@@ -1,0 +1,34 @@
+extends ../main
+
+block content
+  div.pull-right
+    a(role='button', href='/movies/add').btn.btn-primary Add New Movie
+  table.table
+    thead
+      tr
+        th
+        th Title
+        th Genre
+        th Rating
+        th Release Date
+        th Featured
+        th
+    tbody
+      each movie in movies
+        tr
+          // If path starts with http, it's external. Otherwise assume it's hosted with laravel instance
+          if movie.poster_path.lastIndexOf('http://', 0) === 0
+            td: img(src=movie.poster_path, width='50px')
+          else
+            td: img(src=("http://localhost" + movie.poster_path), width='50px')
+          td= movie.title
+          td= movie.genre.name
+          td #{movie.rating.name} (#{movie.rating.code})
+          td= movie.release_date_string
+          if movie.featured === 1
+            td True
+          else
+            td False
+          td
+            button(type='button').btn.btn-sm.btn-info: span.glyphicon.glyphicon-edit
+            button(type='button').btn.btn-sm.btn-danger: span.glyphicon.glyphicon-remove

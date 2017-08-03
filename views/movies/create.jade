@@ -1,0 +1,31 @@
+extends ../main
+
+block content
+  h3 Add New Movie
+  form(method='post').form
+    div.form-group
+      label(for='title') Title
+      input(type='text', name='title', placeholder='Cool Movie 7', required=true)#title.form-control
+    div.form-group
+      label(for='genre') Genre
+      select(name='genre', required=true)#genre.form-control
+        option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
+        each genre in genres
+          option(value=genre.id) #{genre.name}
+    div.form-group
+      label(for='rating') Rating
+      select(name='rating', required=true)#rating.form-control
+        option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
+        each rating in ratings
+          option(value=rating.id) #{rating.name} (#{rating.code})
+    div.form-group
+      label(for='poster_image') Poster Image
+      input(type='url', name='poster_image', placeholder='http://image-host/image.jpg')#poster_image.form-control
+    div.form-group
+      label(for='cover_image') Cover Image
+      input(type='url', name='cover_image', placeholder='http://image-host/image.jpg')#cover_image.form-control
+    div.checkbox
+      label
+        input(type='checkbox', name='featured')
+        | Featured
+    button(type='submit').btn.btn-primary.pull-right Add Movie
