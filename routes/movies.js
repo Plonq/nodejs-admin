@@ -52,11 +52,19 @@ router.post('/add', function(req, res, next) {
         if (!result.isEmpty()) {
             // There are validation errors
             req.session.errors = result.array();
-            res.redirect('/movies/add');
+            // res.redirect('/movies/add');
+            res.render('movies/create', {
+                nav: 'movies',
+                title: 'MI. Movies Admin',
+                ratings: ratings,
+                genres: genres,
+                errors: req.session.errors,
+                form_data: req.body
+            });
             return;
         }
         req.session.message = 'Movie added successfully';
-        res.redirect('/movies');
+        res.redirect('/movies', { formdata: req.body });
     });
 
     console.log(req.body);
