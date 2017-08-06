@@ -13,6 +13,9 @@ block content
       label(for='title') Title
       input(type='text', name='title', placeholder='Cool Movie 7', required=true, value=(form_data?form_data.title:''))#title.form-control
     div.form-group
+      label(for='release_date') Release Date
+      input(type='date', name='release_date', required=true, value=(form_data?form_data.release_date:''))#release_date.form-control
+    div.form-group
       label(for='genre') Genre
       select(name='genre', required=true)#genre.form-control
         option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...

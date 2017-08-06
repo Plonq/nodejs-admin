@@ -1,0 +1,52 @@
+extends ../main
+
+block content
+  h3= movie.title
+  div.row
+    div.col-sm-3: strong Release Date:
+    div.col-sm-9= movie.release_date
+  div.row
+    div.col-sm-3: strong Genre:
+    div.col-sm-9= movie.genre.name
+  div.row
+    div.col-sm-3: strong Rating:
+    div.col-sm-9 #{movie.rating.name} (#{movie.rating.code})
+  div.row
+    div.col-sm-3: strong Poster Image:
+    div.col-sm-9
+      if movie.poster_path.lastIndexOf('http://', 0) === 0
+        a(href=movie.poster_path)= movie.poster_path
+      else
+        a(href=("http://localhost" + movie.poster_path)) http://localhost#{movie.poster_path}
+  div.row
+    div.col-sm-3: strong Cover Image:
+    div.col-sm-9
+      if movie.poster_path.lastIndexOf('http://', 0) === 0
+        a(href=movie.cover_path)= movie.cover_path
+      else
+        a(href=("http://localhost" + movie.cover_path)) http://localhost#{movie.cover_path}
+  div.row
+    div.col-sm-3: strong Featured:
+    div.col-sm-9= (movie.release_date?'Yes':'No')
+
+
+  //strong Release Date:
+  //  p= movie.release_date
+  //strong Genre:
+  //p= movie.genre.name
+  //strong Rating:
+  //p #{movie.rating.name} (#{movie.rating.code})
+  //strong Poster Image:
+  //p
+  //  if movie.poster_path.lastIndexOf('http://', 0) === 0
+  //    a(href=movie.poster_path)= movie.poster_path
+  //  else
+  //    a(href=("http://localhost" + movie.poster_path)) http://localhost#{movie.poster_path}
+  //strong Cover Image:
+  //p
+  //  if movie.poster_path.lastIndexOf('http://', 0) === 0
+  //    a(href=movie.cover_path)= movie.cover_path
+  //  else
+  //    a(href=("http://localhost" + movie.cover_path)) http://localhost#{movie.cover_path}
+  //strong Featured:
+  //p= (movie.release_date?'Yes':'No')

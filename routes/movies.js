@@ -4,10 +4,12 @@ var router = express.Router();
 // For external API calls
 var request = require('request');
 
+var API_URL = 'http://localhost/api';
+
 /* Movies index */
 router.get('/', function(req, res, next) {
     var movies = [];
-    request.get('http://localhost/api/movies', function (error, response, body) {
+    request.get(API_URL+'/movies', function (error, response, body) {
         if (!error && response.statusCode === 200) {
             movies = JSON.parse(body);
             res.render('movies/index', { nav: 'movies', title: 'MI. Movies Admin', movies: movies });
@@ -20,11 +22,11 @@ router.get('/', function(req, res, next) {
 
 // Add new movie form
 router.get('/add', function(req, res, next) {
-    request.get('http://localhost/api/ratings', function (error, response, body) {
+    request.get(API_URL+'/ratings', function (error, response, body) {
         if (!error && response.statusCode === 200) {
             ratings = JSON.parse(body);
 
-            request.get('http://localhost/api/genres', function (error, response, body) {
+            request.get(API_URL+'/genres', function (error, response, body) {
                 if (!error && response.statusCode === 200) {
                     genres = JSON.parse(body);
 
@@ -52,7 +54,8 @@ router.post('/add', function(req, res, next) {
         if (!result.isEmpty()) {
             // There are validation errors
             req.session.errors = result.array();
-            // res.redirect('/movies/add');
+
+            // Render the same page but include the POST data
             res.render('movies/create', {
                 nav: 'movies',
                 title: 'MI. Movies Admin',
@@ -63,11 +66,46 @@ router.post('/add', function(req, res, next) {
             });
             return;
         }
-        req.session.message = 'Movie added successfully';
-        res.redirect('/movies', { formdata: req.body });
+
+        console.log(req.body);
+        // return;
+
+        // Validation passed, send to API
+        form = {
+            title: req.body.title,
+            release_date: req.body.release_date,
+            genre_id: req.body.genre,
+            rating_id: req.body.rating,
+            poster_path: req.body.poster_image,
+            cover_path: req.body.cover_image,
+            featured: (req.body.featured?'1':'0')
+        };
+        request.post(API_URL+'/movies', {form: form}, function (error, response, body) {
+            if (!error && response.statusCode === 201) {
+                movie = JSON.parse(body);
+                req.session.message = 'Movie added successfully';
+                res.redirect('/movies/'+movie.id);
+            }
+            else {
+                res.render('error', { message: 'Error with API' });
+            }
+        });
     });
 
-    console.log(req.body);
+
+});
+
+// Movie detail page
+router.get('/:id', function(req, res, next) {
+    request.get(API_URL+'/movies/'+req.params.id, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            movie = JSON.parse(body);
+            res.render('movies/show', { nav: 'movies', title: 'MI. Movies Admin', movie: movie });
+        }
+        else {
+            res.render('error', { message: 'Error with API' });
+        }
+    });
 });
 
 module.exports = router;
