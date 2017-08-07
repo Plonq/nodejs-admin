@@ -32,12 +32,15 @@ block content
             a(href='/movies/'+movie.id).btn.btn-sm.btn-primary
               span.glyphicon.glyphicon-info-sign
               |  Info
+            | #{' '}
             a(href='/movies/edit/'+movie.id).btn.btn-sm.btn-info
               span.glyphicon.glyphicon-edit
               |  Edit
+            | #{' '}
             button(data-id=movie.id).delete-movie.btn.btn-sm.btn-danger
               span.glyphicon.glyphicon-remove
               |  Delete
+            | #{' '}
 
 block scripts
   script.

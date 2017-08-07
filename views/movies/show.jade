@@ -33,12 +33,15 @@ block content
     div.col-sm-9= (movie.release_date?'Yes':'No')
   div.row
     div.col-sm-12
-      a(href='/movie/edit/'+movie.id).btn.btn-sm.btn-info.pull-right
-        span.glyphicon.glyphicon-remove
-        |  Edit
-      button(data-id=movie.id)#delete-movie.btn.btn-sm.btn-danger.pull-right
-        span.glyphicon.glyphicon-remove
-        |  Delete
+      div.btn-group
+        a(href='/movies/edit/'+movie.id).btn.btn-sm.btn-info
+          span.glyphicon.glyphicon-remove
+          |  Edit
+      | #{' '}
+      div.btn-group
+        button(type='button', data-id=movie.id)#delete-movie.btn.btn-sm.btn-danger
+          span.glyphicon.glyphicon-remove
+          |  Delete
 
 
 block scripts
