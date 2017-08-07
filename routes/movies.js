@@ -83,7 +83,7 @@ router.post('/add', function(req, res, next) {
         request.post(API_URL+'/movies', {form: form}, function (error, response, body) {
             if (!error && response.statusCode === 201) {
                 movie = JSON.parse(body);
-                res.locals.message = 'Movie added successfully';
+                req.session.message = 'Movie added successfully';
                 res.redirect('/movies/'+movie.id);
             }
             else {
@@ -100,7 +100,12 @@ router.get('/:id', function(req, res, next) {
     request.get(API_URL+'/movies/'+req.params.id, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             movie = JSON.parse(body);
-            res.render('movies/show', { nav: 'movies', title: 'MI. Movies Admin', movie: movie });
+            res.render('movies/show', {
+                nav: 'movies',
+                title: 'MI. Movies Admin',
+                movie: movie,
+                message: req.session.message
+            });
         }
         else {
             res.render('error', { message: 'Error with API' });
