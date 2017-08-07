@@ -31,25 +31,33 @@ block content
   div.row
     div.col-sm-3: strong Featured:
     div.col-sm-9= (movie.release_date?'Yes':'No')
+  div.row
+    div.col-sm-12
+      a(href='/movie/edit/'+movie.id).btn.btn-sm.btn-info.pull-right
+        span.glyphicon.glyphicon-remove
+        |  Edit
+      button(data-id=movie.id)#delete-movie.btn.btn-sm.btn-danger.pull-right
+        span.glyphicon.glyphicon-remove
+        |  Delete
 
 
-  //strong Release Date:
-  //  p= movie.release_date
-  //strong Genre:
-  //p= movie.genre.name
-  //strong Rating:
-  //p #{movie.rating.name} (#{movie.rating.code})
-  //strong Poster Image:
-  //p
-  //  if movie.poster_path.lastIndexOf('http://', 0) === 0
-  //    a(href=movie.poster_path)= movie.poster_path
-  //  else
-  //    a(href=("http://localhost" + movie.poster_path)) http://localhost#{movie.poster_path}
-  //strong Cover Image:
-  //p
-  //  if movie.poster_path.lastIndexOf('http://', 0) === 0
-  //    a(href=movie.cover_path)= movie.cover_path
-  //  else
-  //    a(href=("http://localhost" + movie.cover_path)) http://localhost#{movie.cover_path}
-  //strong Featured:
-  //p= (movie.release_date?'Yes':'No')
+block scripts
+  script.
+      $(document).ready(function() {
+          $('#delete-movie').click(function () {
+              var movie_id = $(this).data('id');
+              $.ajax({
+                  method: 'DELETE',
+                  url: '/movies/' + movie_id,
+                  success: function (response) {
+                      if (response === 'success') {
+                          location.href = '/movies';
+                      }
+                  },
+                  error: function (jqXHR, textStatus, errorThrown) {
+                      console.log(JSON.stringify(jqXHR));
+                      console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                  }
+              });
+          });
+      });
