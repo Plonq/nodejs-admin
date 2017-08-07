@@ -22,6 +22,7 @@ router.get('/', function(req, res, next) {
 
 // Add new movie form
 router.get('/add', function(req, res, next) {
+    var ratings, genres;
     request.get(API_URL+'/ratings', function (error, response, body) {
         if (!error && response.statusCode === 200) {
             ratings = JSON.parse(body);
@@ -35,7 +36,8 @@ router.get('/add', function(req, res, next) {
                         title: 'MI. Movies Admin',
                         ratings: ratings,
                         genres: genres,
-                        errors: req.session.errors
+                        errors: req.session.errors,
+                        form_data: req.session.form_data
                     });
                 }
             });
@@ -55,15 +57,9 @@ router.post('/add', function(req, res, next) {
             // There are validation errors
             req.session.errors = result.array();
 
-            // Render the same page but include the POST data
-            res.render('movies/create', {
-                nav: 'movies',
-                title: 'MI. Movies Admin',
-                ratings: ratings,
-                genres: genres,
-                errors: req.session.errors,
-                form_data: req.body
-            });
+            // Redirect back to form, with form data
+            req.session.form_data = req.body;
+            res.redirect('/movies/add');
             return;
         }
 
@@ -110,6 +106,99 @@ router.get('/:id', function(req, res, next) {
         else {
             res.render('error', { message: 'Error with API' });
         }
+    });
+});
+
+// Edit movie form
+router.get('/edit/:id', function(req, res, next) {
+    var ratings, genres, movie;
+    request.get(API_URL+'/ratings', function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            ratings = JSON.parse(body);
+
+            request.get(API_URL+'/genres', function (error, response, body) {
+                if (!error && response.statusCode === 200) {
+                    genres = JSON.parse(body);
+
+                    // If we have errors, use POSTed form data
+                    if (req.session.errors) {
+                        var errors = req.session.errors;
+                        var movie = req.session.form_data;
+                        req.session.errors = null;
+                        req.session.form_data = null;
+                        res.render('movies/edit', {
+                            nav: 'movies',
+                            title: 'MI. Movies Admin',
+                            ratings: ratings,
+                            genres: genres,
+                            errors: errors,
+                            movie: movie
+                        });
+                    }
+                    else {
+                        request.get(API_URL+'/movies/'+req.params.id, function (error, response, body) {
+                            if (!error && response.statusCode === 200) {
+                                movie = JSON.parse(body);
+
+                                res.render('movies/edit', {
+                                    nav: 'movies',
+                                    title: 'MI. Movies Admin',
+                                    ratings: ratings,
+                                    genres: genres,
+                                    movie: movie
+                                });
+                            }
+                            else {
+                                res.render('error', { message: 'Error with API' });
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    });
+});
+
+// Send edit movie request to API
+router.post('/edit/:id', function(req, res, next) {
+    // Validate
+    req.checkBody('title', 'The Title must be between 2 and 30 characters').isLength({min: 2, max: 30});
+    req.checkBody('poster_image', 'The Poster Image must be a valid URL').isURL();
+    req.checkBody('cover_image', 'The Cover Image must be a valid URL').isURL();
+
+    req.getValidationResult().then(function(result) {
+        if (!result.isEmpty()) {
+            // There are validation errors
+            req.session.errors = result.array();
+
+            // Redirect back to edit form, with form data
+            req.session.form_data = req.body;
+            res.redirect('/movies/edit/'+req.params.id);
+            return;
+        }
+
+        console.log(req.body);
+        // return;
+
+        // Validation passed, send to API
+        form = {
+            title: req.body.title,
+            release_date: req.body.release_date,
+            genre_id: req.body.genre,
+            rating_id: req.body.rating,
+            poster_path: req.body.poster_image,
+            cover_path: req.body.cover_image,
+            featured: (req.body.featured?'1':'0')
+        };
+        request.post(API_URL+'/movies/edit/'+req.params.id, {form: form}, function (error, response, body) {
+            if (!error && response.statusCode === 204) {
+                req.session.message = 'Changes saved';
+                res.redirect('/movies/'+movie.id);
+            }
+            else {
+                res.render('error', { message: 'Error with API' });
+            }
+        });
     });
 });
 
