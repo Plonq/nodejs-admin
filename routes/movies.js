@@ -83,7 +83,7 @@ router.post('/add', function(req, res, next) {
         request.post(API_URL+'/movies', {form: form}, function (error, response, body) {
             if (!error && response.statusCode === 201) {
                 movie = JSON.parse(body);
-                req.session.message = 'Movie added successfully';
+                res.locals.message = 'Movie added successfully';
                 res.redirect('/movies/'+movie.id);
             }
             else {
@@ -104,6 +104,18 @@ router.get('/:id', function(req, res, next) {
         }
         else {
             res.render('error', { message: 'Error with API' });
+        }
+    });
+});
+
+// Delete movie
+router.delete('/:id', function(req, res, next) {
+    request.delete(API_URL+'/movies/'+req.params.id, function (error, response, body) {
+        if (!error && response.statusCode === 204) {
+            res.send('success');
+        }
+        else {
+            res.send('fail');
         }
     });
 });

@@ -1,6 +1,9 @@
 extends ../main
 
 block content
+  if message
+    div.alert.alert-info= message
+
   h3= movie.title
   div.row
     div.col-sm-3: strong Release Date:

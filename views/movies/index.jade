@@ -6,8 +6,7 @@ block content
   table.table
     thead
       tr
-        th
-        th Title
+        th(colspan='2') Title
         th Genre
         th Rating
         th Release Date
@@ -15,7 +14,7 @@ block content
         th
     tbody
       each movie in movies
-        tr
+        tr(id=movie.id)
           // If path starts with http, it's external. Otherwise assume it's hosted with laravel instance
           if movie.poster_path.lastIndexOf('http://', 0) === 0
             td: img(src=movie.poster_path, width='50px')
@@ -30,5 +29,33 @@ block content
           else
             td False
           td
-            button(type='button').btn.btn-sm.btn-info: span.glyphicon.glyphicon-edit
-            button(type='button').btn.btn-sm.btn-danger: span.glyphicon.glyphicon-remove
+            a(href='/movies/'+movie.id).btn.btn-sm.btn-primary
+              span.glyphicon.glyphicon-info-sign
+              |  Info
+            a(href='/movies/edit/'+movie.id).btn.btn-sm.btn-info
+              span.glyphicon.glyphicon-edit
+              |  Edit
+            button(data-id=movie.id).delete-movie.btn.btn-sm.btn-danger
+              span.glyphicon.glyphicon-remove
+              |  Delete
+
+block scripts
+  script.
+    $(document).ready(function() {
+        $('.delete-movie').click(function () {
+            var movie_id = $(this).data('id');
+            $.ajax({
+                method: 'DELETE',
+                url: '/movies/' + movie_id,
+                success: function (response) {
+                    if (response === 'success') {
+                        $('#'+movie_id).remove();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        });
+    });
