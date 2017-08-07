@@ -1,0 +1,37 @@
+extends ../main
+
+block content
+  form#booking-filter-form
+    div.row
+      div#filter-movie.col-sm-4
+        label(for='filter_movie').sr-only Filter by Movie:
+        select(name='filter_movie_id')#filter_movie.form-control
+          option(selected=true, disabled=true, hidden=true, style='display: none' value='') Filter by Movie...
+          each movie in movies
+            option(value=movie.id)= movie.title
+      div#filter-session.col-sm-5.hidden
+        label(for='filter_movie_session').sr-only Filter by Movie:
+        select(name='filter_movie_session_id')#filter_movie_session.form-control
+          option(selected=true, disabled=true, hidden=true, style='display: none' value='') Filter by Session...
+          each movie_session in movie_sessions
+            option(value=movie_session.id)= movie_session.scheduled_at
+      div.col-sm-1
+        a#clear-filter.btn.btn-link Clear Filter
+  div.spacer
+  table.table
+    thead
+      tr
+        th Timestamp
+        th User Account
+        th Name
+        th Total Cost
+        th
+    tbody
+      each booking in bookings
+        tr
+          td= booking.created_at
+          td= booking.user.email
+          td= booking.name
+          td $#{booking.total_cost.toFixed(2)}
+          td
+            a(role='button', href='/bookings/'+booking.id).btn.btn-sm.btn-primary Details
