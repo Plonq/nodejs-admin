@@ -9,7 +9,7 @@ block content
           option(selected=true, disabled=true, hidden=true, style='display: none' value='') Filter by Movie...
           each movie in movies
             option(value=movie.id)= movie.title
-      div#filter-session.col-sm-5.hidden
+      div(style='display:none')#filter-session.col-sm-5
         label(for='filter_movie_session').sr-only Filter by Movie:
         select(name='filter_movie_session_id')#filter_movie_session.form-control
           option(selected=true, disabled=true, hidden=true, style='display: none' value='') Filter by Session...
@@ -26,12 +26,40 @@ block content
         th Name
         th Total Cost
         th
-    tbody
+    tbody#booking-tbody
       each booking in bookings
         tr
           td= booking.created_at
           td= booking.user.email
           td= booking.name
           td $#{booking.total_cost.toFixed(2)}
+          td: a(href='/bookings/'+booking.id).btn.btn-sm.btn-primary Details
           td
-            a(role='button', href='/bookings/'+booking.id).btn.btn-sm.btn-primary Details
+            each ticket in booking.tickets
+              = ' ' + ticket.movie_session.movie_id + ' '
+          td
+            each ticket in booking.tickets
+              = ' ' + ticket.movie_session.id + ' '
+
+block scripts
+  script.
+      $(document).ready(function() {
+          $('#filter-movie').change(function () {
+              // Show session filter
+              $('#filter-session').show();
+
+              $.ajax({
+                  method: 'GET',
+                  url: '/bookings/by_movie' + movie_id,
+                  success: function (response) {
+                      if (response === 'success') {
+                          $('#' + movie_id).remove();
+                      }
+                  },
+                  error: function (jqXHR, textStatus, errorThrown) {
+                      console.log(JSON.stringify(jqXHR));
+                      console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                  }
+              });
+          });
+      });
