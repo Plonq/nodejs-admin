@@ -4,10 +4,11 @@ block content
   if message.length > 0
     div.alert.alert-info= message
   div.row
-    div.col-sm-6
-      label(for='filter-movie').sr-only Choose a Movie:
+    div(style='padding-top: 10px').col-sm-1
+      label(for='filter-movie') Movie:
+    div.col-sm-7.col-md-5
       select(name='filter_movie_id')#filter-movie.form-control
-        option(selected=true, disabled=true, hidden=true, style='display: none' value='') Choose a Movie...
+        option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
         each movie in movies
           option(value=movie.id selected=(!!selected_movie && parseInt(selected_movie) === movie.id))= movie.title
   table(style='display: none')#table.table
