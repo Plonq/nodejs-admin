@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var validator = require('express-validator');
 var session = require('express-session');
+var flash = require('connect-flash');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -29,6 +30,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(validator());
 app.use(session({secret: '{secret}', name: 'session_id', saveUninitialized: true, resave: true}));
+app.use(flash());
 
 app.use('/', index);
 app.use('/users', users);
