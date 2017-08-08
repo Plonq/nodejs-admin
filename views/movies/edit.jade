@@ -1,52 +1,52 @@
 extends ../main
 
 block content
-    h3 Edit Movie
-    if errors.length > 1
-        div.alert.alert-danger
-            p There are validation errors:
-            ul
-                each error in errors
-                    li: = error.msg
-    form(method='post').form
-        div.form-group
-            label(for='title') Title
-            input(type='text', name='title', placeholder='Cool Movie 7', required=true, value=movie.title)#title.form-control
-        div.form-group
-            label(for='release_date') Release Date
-            input(type='date', name='release_date', required=true, value=movie.release_date)#release_date.form-control
-        div.form-group
-            label(for='genre_id') Genre
-            select(name='genre_id', required=true)#genre_id.form-control
-                option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
-                each genre in genres
-                    option(value=genre.id selected=(parseInt(movie.genre_id)===genre.id)) #{genre.name}
-        div.form-group
-            label(for='rating_id') Rating
-            select(name='rating_id', required=true)#rating_id.form-control
-                option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
-                each rating in ratings
-                    option(value=rating.id selected=(parseInt(movie.rating_id)===rating.id)) #{rating.name} (#{rating.code})
-        div.form-group
-            label(for='poster_image_url') Poster Image
-            input(type='url', name='poster_image_url', placeholder='http://image-host/poster.jpg', value=movie.poster_image_url)#poster_image_url.form-control
-        div.form-group
-            label(for='cover_image_url') Cover Image
-            input(type='url', name='cover_image_url', placeholder='http://image-host/cover.jpg', value=movie.cover_image_url)#cover_image_url.form-control
-        div.checkbox
-            label
-                input(type='checkbox', name='featured', checked=(!!movie.featured))
-                | Featured
-        div.pull-right
-            button(type='button')#cancel-button.btn.btn-default Cancel
-            != ' '
-            button(type='submit').btn.btn-primary Save
+  h3 Edit Movie
+  if errors.length > 1
+    div.alert.alert-danger
+      p There are validation errors:
+      ul
+        each error in errors
+          li: = error.msg
+  form(method='post').form
+    div.form-group
+      label(for='title') Title
+      input(type='text', name='title', placeholder='Cool Movie 7', required=true, value=movie.title)#title.form-control
+    div.form-group
+      label(for='release_date') Release Date
+      input(type='date', name='release_date', required=true, value=movie.release_date)#release_date.form-control
+    div.form-group
+      label(for='genre_id') Genre
+      select(name='genre_id', required=true)#genre_id.form-control
+        option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
+        each genre in genres
+          option(value=genre.id selected=(parseInt(movie.genre_id) === genre.id)) #{genre.name}
+    div.form-group
+      label(for='rating_id') Rating
+      select(name='rating_id', required=true)#rating_id.form-control
+        option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
+        each rating in ratings
+          option(value=rating.id selected=(parseInt(movie.rating_id) === rating.id)) #{rating.name} (#{rating.code})
+    div.form-group
+      label(for='poster_image_url') Poster Image
+      input(type='url', name='poster_image_url', placeholder='http://image-host/poster.jpg', value=movie.poster_image_url)#poster_image_url.form-control
+    div.form-group
+      label(for='cover_image_url') Cover Image
+      input(type='url', name='cover_image_url', placeholder='http://image-host/cover.jpg', value=movie.cover_image_url)#cover_image_url.form-control
+    div.checkbox
+      label
+        input(type='checkbox', name='featured', checked=(!!movie.featured))
+        | Featured
+    div.pull-right
+      button(type='button')#cancel-button.btn.btn-default Cancel
+      != ' '
+      button(type='submit').btn.btn-primary Save
 
 block scripts
-    script.
-        $(document).ready(function () {
-            $('#cancel-button').click(function () {
-                parent.history.back();
-                return false;
-            });
-        });
+  script.
+      $(document).ready(function () {
+          $('#cancel-button').click(function () {
+              parent.history.back();
+              return false;
+          });
+      });
