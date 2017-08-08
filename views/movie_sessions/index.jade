@@ -1,13 +1,15 @@
 extends ../main
 
 block content
+  if message.length > 0
+    div.alert.alert-info= message
   div.row
-    div.col-sm-4
+    div.col-sm-6
       label(for='filter-movie').sr-only Choose a Movie:
       select(name='filter_movie_id')#filter-movie.form-control
         option(selected=true, disabled=true, hidden=true, style='display: none' value='') Choose a Movie...
         each movie in movies
-          option(value=movie.id)= movie.title
+          option(value=movie.id selected=(!!selected_movie && parseInt(selected_movie) === movie.id))= movie.title
   table(style='display: none')#table.table
     thead
       tr
@@ -15,19 +17,21 @@ block content
         th Cinema
         th
     tbody#movie_sessions-tbody
-  div(style='display: none')#add-new-button.pull-right
-    a(href='/movie_sessions/add').btn.btn-primary Add New Session
+  div.pull-right
+    a(href='/movie_sessions/add')#add-new-button.btn.btn-primary Add New Session
 
 block scripts
   script.
     $(document).ready(function() {
-        $('#filter-movie').change(function () {
+        var filter_movie = $('#filter-movie');
+
+        filter_movie.change(function () {
             // Get sessions for selected movie
+            var selected_movie_id = this.value;
             $('#table').show();
-            $('#add-new-button').show();
             $.ajax({
                 method: 'POST',
-                url: '/movie_sessions/by_movie/' + this.value,
+                url: '/movie_sessions/by_movie/' + selected_movie_id,
                 success: function (response) {
                     // Add sessions to table
                     var tbody = $('#movie_sessions-tbody');
@@ -61,6 +65,9 @@ block scripts
                             }
                         });
                     });
+
+                    // Configure "Add New Session" button for the selected movie
+                    $('#add-new-button').attr('href', '/movie_sessions/add?movie_id=' + selected_movie_id);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(JSON.stringify(jqXHR));
@@ -68,4 +75,9 @@ block scripts
                 }
             });
         });
+
+        // If movie already selected trigger the change event to get sessions
+        if (filter_movie.val() !== '') {
+            filter_movie.trigger("change");
+        }
     });
