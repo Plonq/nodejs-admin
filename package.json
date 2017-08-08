@@ -7,15 +7,15 @@
   },
   "dependencies": {
     "body-parser": "~1.17.1",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "express": "~4.15.2",
+    "express-session": "~1.15.5",
+    "express-validator": "~3.2.1",
     "jade": "~1.11.0",
     "morgan": "~1.8.1",
-    "serve-favicon": "~2.4.2",
     "request": "~2.81.0",
-    "express-validator": "~3.2.1",
-    "express-session": "~1.15.5",
-    "connect-flash": "~0.1.1"
+    "serve-favicon": "~2.4.2"
   }
 }
