@@ -37,4 +37,16 @@ block content
             label
                 input(type='checkbox', name='featured', checked=(!!movie.featured))
                 | Featured
-        button(type='submit').btn.btn-primary.pull-right Save
+        div.pull-right
+            button(type='button')#cancel-button.btn.btn-default Cancel
+            != ' '
+            button(type='submit').btn.btn-primary Save
+
+block scripts
+    script.
+        $(document).ready(function () {
+            $('#cancel-button').click(function () {
+                parent.history.back();
+                return false;
+            });
+        });
