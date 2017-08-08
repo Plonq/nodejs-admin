@@ -1,0 +1,71 @@
+extends ../main
+
+block content
+  div.row
+    div.col-sm-4
+      label(for='filter-movie').sr-only Choose a Movie:
+      select(name='filter_movie_id')#filter-movie.form-control
+        option(selected=true, disabled=true, hidden=true, style='display: none' value='') Choose a Movie...
+        each movie in movies
+          option(value=movie.id)= movie.title
+  table(style='display: none')#table.table
+    thead
+      tr
+        th Session Time
+        th Cinema
+        th
+    tbody#movie_sessions-tbody
+  div(style='display: none')#add-new-button.pull-right
+    a(href='/movie_sessions/add').btn.btn-primary Add New Session
+
+block scripts
+  script.
+    $(document).ready(function() {
+        $('#filter-movie').change(function () {
+            // Get sessions for selected movie
+            $('#table').show();
+            $('#add-new-button').show();
+            $.ajax({
+                method: 'POST',
+                url: '/movie_sessions/by_movie/' + this.value,
+                success: function (response) {
+                    // Add sessions to table
+                    var tbody = $('#movie_sessions-tbody');
+                    tbody.empty();
+                    $.each(response, function (n, movie_session) {
+                        var session_row_html = $([
+                            "<tr id='"+movie_session.id+"'>",
+                            "  <td>" + movie_session.scheduled_at + "</td>",
+                            "  <td>" + movie_session.cinema.city + "</td>",
+                            "  <td><a class='btn btn-sm btn-info' href='/movie_sessions/edit/" + movie_session.id + "'><span class='glyphicon glyphicon-edit'></span> Edit</a>",
+                            "  <button class='btn btn-sm btn-danger delete-movie-session' data-id='" + movie_session.id + "'><span class='glyphicon glyphicon-remove'></span> Delete</a></td>",
+                            "</tr>"
+                        ].join("\n"));
+                        tbody.append(session_row_html);
+                    });
+
+                    // Register click event on the delete buttons
+                    $('.delete-movie-session').click(function () {
+                        var movie_session_id = $(this).data('id');
+                        $.ajax({
+                            method: 'DELETE',
+                            url: '/movie_sessions/' + movie_session_id,
+                            success: function (response) {
+                                if (response === 'success') {
+                                    $('#' + movie_session_id).remove();
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log(JSON.stringify(jqXHR));
+                                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                            }
+                        });
+                    });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        });
+    });

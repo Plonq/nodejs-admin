@@ -12,7 +12,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var login = require('./routes/login');
 var movies = require('./routes/movies');
-var sessions = require('./routes/sessions');
+var movie_sessions = require('./routes/movie_sessions');
 var bookings = require('./routes/bookings');
 
 var app = express();
@@ -36,7 +36,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/login', login);
 app.use('/movies', movies);
-app.use('/sessions', sessions);
+app.use('/movie_sessions', movie_sessions);
 app.use('/bookings', bookings);
 
 // catch 404 and forward to error handler
