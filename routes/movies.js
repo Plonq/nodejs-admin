@@ -36,8 +36,8 @@ router.get('/add', function(req, res, next) {
                         title: 'MI. Movies Admin',
                         ratings: ratings,
                         genres: genres,
-                        errors: req.session.errors,
-                        form_data: req.session.form_data
+                        errors: req.flash('errors'),
+                        form_data: req.flash('form_data')[0]
                     });
                 }
             });
@@ -49,40 +49,37 @@ router.get('/add', function(req, res, next) {
 router.post('/add', function(req, res, next) {
     // Validate
     req.checkBody('title', 'The Title must be between 2 and 30 characters').isLength({min: 2, max: 30});
-    req.checkBody('poster_image', 'The Poster Image must be a valid URL').isURL();
-    req.checkBody('cover_image', 'The Cover Image must be a valid URL').isURL();
+    req.checkBody('poster_image_url', 'The Poster Image must be a valid URL').isURL();
+    req.checkBody('cover_image_url', 'The Cover Image must be a valid URL').isURL();
 
     req.getValidationResult().then(function(result) {
         if (!result.isEmpty()) {
             // There are validation errors
-            req.session.errors = result.array();
-
-            // Redirect back to form, with form data
-            req.session.form_data = req.body;
+            // Redirect back to form, with form data and errors
+            req.flash('errors', result.array());
+            req.flash('form_data', req.body);
             res.redirect('/movies/add');
             return;
         }
-
-        console.log(req.body);
-        // return;
 
         // Validation passed, send to API
         form = {
             title: req.body.title,
             release_date: req.body.release_date,
-            genre_id: req.body.genre,
-            rating_id: req.body.rating,
-            poster_path: req.body.poster_image,
-            cover_path: req.body.cover_image,
+            genre_id: req.body.genre_id,
+            rating_id: req.body.rating_id,
+            poster_image_url: req.body.poster_image_url,
+            cover_image_url: req.body.cover_image_url,
             featured: (req.body.featured?'1':'0')
         };
         request.post(API_URL+'/movies', {form: form}, function (error, response, body) {
             if (!error && response.statusCode === 201) {
                 movie = JSON.parse(body);
-                req.session.message = 'Movie added successfully';
+                req.flash('message', 'Movie added successfully');
                 res.redirect('/movies/'+movie.id);
             }
             else {
+                console.log('error');
                 res.render('error', { message: 'Error with API' });
             }
         });
@@ -100,7 +97,7 @@ router.get('/:id', function(req, res, next) {
                 nav: 'movies',
                 title: 'MI. Movies Admin',
                 movie: movie,
-                message: req.session.message
+                message: req.flash('message')
             });
         }
         else {
@@ -120,39 +117,31 @@ router.get('/edit/:id', function(req, res, next) {
                 if (!error && response.statusCode === 200) {
                     genres = JSON.parse(body);
 
-                    // If we have errors, use POSTed form data
-                    if (req.session.errors) {
-                        var errors = req.session.errors;
-                        var movie = req.session.form_data;
-                        req.session.errors = null;
-                        req.session.form_data = null;
-                        res.render('movies/edit', {
-                            nav: 'movies',
-                            title: 'MI. Movies Admin',
-                            ratings: ratings,
-                            genres: genres,
-                            errors: errors,
-                            movie: movie
-                        });
-                    }
-                    else {
-                        request.get(API_URL+'/movies/'+req.params.id, function (error, response, body) {
-                            if (!error && response.statusCode === 200) {
-                                movie = JSON.parse(body);
-
-                                res.render('movies/edit', {
-                                    nav: 'movies',
-                                    title: 'MI. Movies Admin',
-                                    ratings: ratings,
-                                    genres: genres,
-                                    movie: movie
-                                });
+                    request.get(API_URL+'/movies/'+req.params.id, function (error, response, body) {
+                        if (!error && response.statusCode === 200) {
+                            movie = JSON.parse(body);
+                            var form_data = req.flash('form_data');
+                            console.log(form_data);
+                            if (form_data.length > 0) {
+                                movie = form_data[0];
                             }
                             else {
-                                res.render('error', { message: 'Error with API' });
+                                movie = JSON.parse(body);
                             }
-                        });
-                    }
+                            console.log(movie);
+                            res.render('movies/edit', {
+                                nav: 'movies',
+                                title: 'MI. Movies Admin',
+                                ratings: ratings,
+                                genres: genres,
+                                movie: movie,
+                                errors: req.flash('errors'),
+                            });
+                        }
+                        else {
+                            res.render('error', { message: 'Error with API' });
+                        }
+                    });
                 }
             });
         }
@@ -163,16 +152,15 @@ router.get('/edit/:id', function(req, res, next) {
 router.post('/edit/:id', function(req, res, next) {
     // Validate
     req.checkBody('title', 'The Title must be between 2 and 30 characters').isLength({min: 2, max: 30});
-    req.checkBody('poster_image', 'The Poster Image must be a valid URL').isURL();
-    req.checkBody('cover_image', 'The Cover Image must be a valid URL').isURL();
+    req.checkBody('poster_image_url', 'The Poster Image must be a valid URL').isURL();
+    req.checkBody('cover_image_url', 'The Cover Image must be a valid URL').isURL();
 
     req.getValidationResult().then(function(result) {
         if (!result.isEmpty()) {
             // There are validation errors
-            req.session.errors = result.array();
-
-            // Redirect back to edit form, with form data
-            req.session.form_data = req.body;
+            // Redirect back to edit form, with form data and errors
+            req.flash('errors', result.array());
+            req.flash('form_data', req.body);
             res.redirect('/movies/edit/'+req.params.id);
             return;
         }
@@ -184,16 +172,16 @@ router.post('/edit/:id', function(req, res, next) {
         form = {
             title: req.body.title,
             release_date: req.body.release_date,
-            genre_id: req.body.genre,
-            rating_id: req.body.rating,
-            poster_path: req.body.poster_image,
-            cover_path: req.body.cover_image,
+            genre_id: req.body.genre_id,
+            rating_id: req.body.rating_id,
+            poster_image_url: req.body.poster_image_url,
+            cover_image_url: req.body.cover_image_url,
             featured: (req.body.featured?'1':'0')
         };
-        request.post(API_URL+'/movies/edit/'+req.params.id, {form: form}, function (error, response, body) {
+        request.put(API_URL+'/movies/'+req.params.id, {form: form}, function (error, response, body) {
             if (!error && response.statusCode === 204) {
-                req.session.message = 'Changes saved';
-                res.redirect('/movies/'+movie.id);
+                req.flash('message', 'Changes saved');
+                res.redirect('/movies/'+req.params.id);
             }
             else {
                 res.render('error', { message: 'Error with API' });

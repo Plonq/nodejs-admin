@@ -1,7 +1,7 @@
 extends ../main
 
 block content
-  if message
+  if message.length > 0
     div.alert.alert-info= message
 
   h3= movie.title
@@ -17,17 +17,11 @@ block content
   div.row
     div.col-sm-3: strong Poster Image:
     div.col-sm-9
-      if movie.poster_path.lastIndexOf('http://', 0) === 0
-        a(href=movie.poster_path)= movie.poster_path
-      else
-        a(href=("http://localhost" + movie.poster_path)) http://localhost#{movie.poster_path}
+      a(href=movie.poster_image_url)= movie.poster_image_url
   div.row
     div.col-sm-3: strong Cover Image:
     div.col-sm-9
-      if movie.poster_path.lastIndexOf('http://', 0) === 0
-        a(href=movie.cover_path)= movie.cover_path
-      else
-        a(href=("http://localhost" + movie.cover_path)) http://localhost#{movie.cover_path}
+      a(href=movie.cover_image_url)= movie.cover_image_url
   div.row
     div.col-sm-3: strong Featured:
     div.col-sm-9= (movie.release_date?'Yes':'No')

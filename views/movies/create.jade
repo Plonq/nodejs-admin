@@ -2,7 +2,7 @@ extends ../main
 
 block content
   h3 Add New Movie
-  if errors
+  if errors.length > 0
     div.alert.alert-danger
       p There are validation errors:
       ul
@@ -16,23 +16,23 @@ block content
       label(for='release_date') Release Date
       input(type='date', name='release_date', required=true, value=(form_data?form_data.release_date:''))#release_date.form-control
     div.form-group
-      label(for='genre') Genre
-      select(name='genre', required=true)#genre.form-control
+      label(for='genre_id') Genre
+      select(name='genre_id', required=true)#genre_id.form-control
         option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
         each genre in genres
           option(value=genre.id selected=(!!form_data&&parseInt(form_data.genre)===genre.id)) #{genre.name}
     div.form-group
-      label(for='rating') Rating
-      select(name='rating', required=true)#rating.form-control
+      label(for='rating_id') Rating
+      select(name='rating_id', required=true)#rating_id.form-control
         option(selected=true, disabled=true, hidden=true, style='display: none' value='') Please select...
         each rating in ratings
           option(value=rating.id selected=(!!form_data&&parseInt(form_data.rating)===rating.id)) #{rating.name} (#{rating.code})
     div.form-group
-      label(for='poster_image') Poster Image
-      input(type='url', name='poster_image', placeholder='http://image-host/poster.jpg', value=(!!form_data&&form_data.poster_image?form_data.poster_image:''))#poster_image.form-control
+      label(for='poster_image_url') Poster Image
+      input(type='url', name='poster_image_url', placeholder='http://image-host/poster.jpg', value=(!!form_data&&form_data.poster_image_url?form_data.poster_image_url:''))#poster_image_url.form-control
     div.form-group
-      label(for='cover_image') Cover Image
-      input(type='url', name='cover_image', placeholder='http://image-host/cover.jpg', value=(!!form_data&&form_data.cover_image?form_data.cover_image:''))#cover_image.form-control
+      label(for='cover_image_url') Cover Image
+      input(type='url', name='cover_image_url', placeholder='http://image-host/cover.jpg', value=(!!form_data&&form_data.cover_image_url?form_data.cover_image_url:''))#cover_image_url.form-control
     div.checkbox
       label
         input(type='checkbox', name='featured', checked=(!!form_data&&!!form_data.featured))

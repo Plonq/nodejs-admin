@@ -15,11 +15,7 @@ block content
     tbody
       each movie in movies
         tr(id=movie.id)
-          // If path starts with http, it's external. Otherwise assume it's hosted with laravel instance
-          if movie.poster_path.lastIndexOf('http://', 0) === 0
-            td: img(src=movie.poster_path, width='50px')
-          else
-            td: img(src=("http://localhost" + movie.poster_path), width='50px')
+          td: img(src=movie.poster_image_url, width='50px')
           td= movie.title
           td= movie.genre.name
           td #{movie.rating.name} (#{movie.rating.code})
