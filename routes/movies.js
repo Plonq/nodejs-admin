@@ -121,14 +121,14 @@ router.get('/edit/:id', function(req, res, next) {
                         if (!error && response.statusCode === 200) {
                             movie = JSON.parse(body);
                             var form_data = req.flash('form_data');
-                            console.log(form_data);
+
                             if (form_data.length > 0) {
                                 movie = form_data[0];
                             }
                             else {
                                 movie = JSON.parse(body);
                             }
-                            console.log(movie);
+
                             res.render('movies/edit', {
                                 nav: 'movies',
                                 title: 'MI. Movies Admin',
@@ -164,9 +164,6 @@ router.post('/edit/:id', function(req, res, next) {
             res.redirect('/movies/edit/'+req.params.id);
             return;
         }
-
-        console.log(req.body);
-        // return;
 
         // Validation passed, send to API
         form = {
