@@ -11,6 +11,10 @@ html
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
   body
     div.container
+      div.row
+        div.col-xs-2.col-xs-offset-9
+          if auth
+            a(href='/logout').btn.btn-link.pull-right Logout
       header.page-header.text-center
         h1= title
       block nav

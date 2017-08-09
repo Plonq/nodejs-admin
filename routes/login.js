@@ -4,6 +4,11 @@ var router = express.Router();
 // For external API calls
 var request = require('request');
 
+// Login page
+router.get('/', function(req, res, next) {
+    res.render('login', { title: 'MI. Movies Admin' });
+});
+
 /*
  * Use Laravel API to check creds.
  * Redirect to /movies on success.
@@ -18,10 +23,12 @@ router.post('/', function(req, res, next) {
             var data = JSON.parse(body);
             if (data.result === 'success') {
                 console.log('Auth succeeded');
-                res.redirect('/movies');
+                req.session.auth = true;
+                res.redirect('/');
             }
             else {
-                res.redirect('/');
+                req.session.auth = false;
+                res.redirect('/login');
             }
         }
     })

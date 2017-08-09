@@ -32,9 +32,36 @@ app.use(validator());
 app.use(session({secret: '{secret}', name: 'session_id', saveUninitialized: true, resave: true}));
 app.use(flash());
 
+// Make auth status visible to all views
+app.use(function(req, res, next) {
+  res.locals.auth = req.session.auth;
+  next();
+});
+
+// Login route first otherwise redirect loop
+app.use('/login', login);
+
+// Auth - redirect to login page if unauthenticated
+app.use(function(req, res, next) {
+  if (!req.session.auth) {
+    res.redirect('/login');
+    return;
+  }
+  else {
+    next();
+  }
+});
+
+// Logout
+app.use('/logout', function(req, res, next) {
+  req.session.destroy();
+  res.redirect('/login');
+  return;
+});
+
+// Standard routes
 app.use('/', index);
 app.use('/users', users);
-app.use('/login', login);
 app.use('/movies', movies);
 app.use('/movie_sessions', movie_sessions);
 app.use('/bookings', bookings);
