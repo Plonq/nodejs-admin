@@ -3,20 +3,18 @@ extends ../main
 block content
   form#booking-filter-form
     div.row
-      div#filter-movie.col-sm-4
-        label(for='filter_movie').sr-only Filter by Movie:
-        select(name='filter_movie_id')#filter_movie.form-control
+      div.col-sm-4
+        label(for='filter-movie').sr-only Filter by Movie:
+        select(name='filter_movie_id')#filter-movie.form-control
           option(selected=true, disabled=true, hidden=true, style='display: none' value='') Filter by Movie...
           each movie in movies
             option(value=movie.id)= movie.title
-      div(style='display:none')#filter-session.col-sm-5
-        label(for='filter_movie_session').sr-only Filter by Movie:
-        select(name='filter_movie_session_id')#filter_movie_session.form-control
+      div(style='display:none')#filter-session-div.col-sm-5
+        label(for='filter-movie-session').sr-only Filter by Movie:
+        select(name='filter_movie_session_id')#filter-movie-session.form-control
           option(selected=true, disabled=true, hidden=true, style='display: none' value='') Filter by Session...
-          each movie_session in movie_sessions
-            option(value=movie_session.id)= movie_session.scheduled_at
       div.col-sm-1
-        a#clear-filter.btn.btn-link Clear Filter
+        button(type='button')#clear-filter.btn.btn-link Clear Filter
   div.spacer
   table.table
     thead
@@ -34,26 +32,92 @@ block content
           td= booking.name
           td $#{booking.total_cost.toFixed(2)}
           td: a(href='/bookings/'+booking.id).btn.btn-sm.btn-primary Details
-          td
-            each ticket in booking.tickets
-              = ' ' + ticket.movie_session.movie_id + ' '
-          td
-            each ticket in booking.tickets
-              = ' ' + ticket.movie_session.id + ' '
+  div(style='display: none')#no-results.text-center
+    p No bookings for selected filter
 
 block scripts
   script.
       $(document).ready(function() {
-          $('#filter-movie').change(function () {
-              // Show session filter
-              $('#filter-session').show();
+          // Function to populate table with bookings
+          var populate_table = function (bookings, tbody) {
+              $.each(bookings, function (i, item) {
+                  var booking_row_html = $([
+                      "<tr>",
+                      "  <td>" + item.created_at + "</td>",
+                      "  <td>" + item.user.email + "</td>",
+                      "  <td>" + item.name + "</td>",
+                      "  <td>" + item.total_cost.toFixed(2) + "</td>",
+                      "  <td><a class='btn btn-sm btn-primary' href='/bookings/" + item.id + "'>Details</a>",
+                      "</tr>"
+                  ].join("\n"));
+                  tbody.append(booking_row_html);
+              });
+          }
 
+          var filter_movie = $('#filter-movie');
+          var filter_movie_session = $('#filter-movie-session');
+
+          var tbody = $('#booking-tbody');
+          var no_results = $('#no-results');
+          var session_filter = $('#filter-session-div');
+
+          filter_movie.change(function () {
+              var movie_id = $(this).val();
+
+              // Get all bookings for selected movie
               $.ajax({
-                  method: 'GET',
-                  url: '/bookings/by_movie' + movie_id,
+                  method: 'POST',
+                  url: ('/bookings/by_movie/' + movie_id),
                   success: function (response) {
-                      if (response === 'success') {
-                          $('#' + movie_id).remove();
+                      tbody.empty();
+                      if (response === 'no results') {
+                          no_results.show();
+                      }
+                      else {
+                          no_results.hide();
+                          populate_table(response, tbody);
+                      }
+                  },
+                  error: function (jqXHR, textStatus, errorThrown) {
+                      console.log(JSON.stringify(jqXHR));
+                      console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                  }
+              });
+
+              // Populate and show session filter select
+              filter_movie_session.empty();
+              $.ajax({
+                  method: 'POST',
+                  url: ('/movie_sessions/by_movie/' + movie_id),
+                  success: function (response) {
+                      $.each(response, function (i, item) {
+                          var session_option_html = '<option value="'+item.id+'">'+item.cinema.city+' - '+item.scheduled_at+'</option>';
+                          $('#filter-movie-session').append(session_option_html);
+                      });
+                      session_filter.show();
+                  },
+                  error: function (jqXHR, textStatus, errorThrown) {
+                      console.log(JSON.stringify(jqXHR));
+                      console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                  }
+              });
+          });
+
+          filter_movie_session.change(function () {
+              var movie_session_id = $(this).val();
+
+              // Get all bookings for selected movie session
+              $.ajax({
+                  method: 'POST',
+                  url: ('/bookings/by_movie_session/' + movie_session_id),
+                  success: function (response) {
+                      tbody.empty();
+                      if (response === 'no results') {
+                          no_results.show();
+                      }
+                      else {
+                          no_results.hide();
+                          populate_table(response, tbody);
                       }
                   },
                   error: function (jqXHR, textStatus, errorThrown) {
@@ -62,4 +126,32 @@ block scripts
                   }
               });
           });
+
+          $('#clear-filter').click(function () {
+              // Clear filter drop-downs and populate table with all bookings
+              filter_movie.val('');
+              session_filter.hide();
+              filter_movie_session.val('');
+
+              $.ajax({
+                  method: 'POST',
+                  url: '/bookings',
+                  success: function (response) {
+                      console.log(response);
+                      tbody.empty();
+                      if (response === 'no results') {
+                          no_results.show();
+                      }
+                      else {
+                          no_results.hide();
+                          populate_table(response, tbody);
+                      }
+                  },
+                  error: function (jqXHR, textStatus, errorThrown) {
+                      console.log(JSON.stringify(jqXHR));
+                      console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                  }
+              });
+          });
+
       });

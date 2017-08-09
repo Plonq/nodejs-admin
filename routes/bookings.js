@@ -8,9 +8,9 @@ var API_URL = 'http://localhost/api';
 
 /* Bookings index. */
 router.get('/', function(req, res, next) {
-    var bookings = [];
-    var movies = [];
-    var movie_sessions = [];
+    var bookings;
+    var movies;
+    var movie_sessions;
     request.get(API_URL+'/bookings', function (error, response, body) {
         if (!error && response.statusCode === 200) {
             bookings = JSON.parse(body);
@@ -31,5 +31,51 @@ router.get('/', function(req, res, next) {
         }
     });
 });
+
+/* AJAX: All bookings. */
+router.post('/', function(req, res, next) {
+    var bookings;
+    request.get(API_URL+'/bookings', function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            bookings = JSON.parse(body);
+
+            res.send(bookings);
+        }
+        else if(response.statusCode === 204) {
+            res.send('no results');
+        }
+    });
+});
+
+/* AJAX: Bookings by movie. */
+router.post('/by_movie/:movie_id', function(req, res, next) {
+    var bookings;
+    request.get(API_URL+'/bookings/by_movie/'+req.params.movie_id, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            bookings = JSON.parse(body);
+
+            res.send(bookings);
+        }
+        else if(response.statusCode === 204) {
+            res.send('no results');
+        }
+    });
+});
+
+/* AJAX: Bookings by movie session. */
+router.post('/by_movie_session/:movie_session_id', function(req, res, next) {
+    var bookings;
+    request.get(API_URL+'/bookings/by_movie_session/'+req.params.movie_session_id, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            bookings = JSON.parse(body);
+
+            res.send(bookings);
+        }
+        else if(response.statusCode === 204) {
+            res.send('no results');
+        }
+    });
+});
+
 
 module.exports = router;
