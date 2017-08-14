@@ -90,6 +90,8 @@ block scripts
                   method: 'POST',
                   url: ('/movie_sessions/by_movie/' + movie_id),
                   success: function (response) {
+                      var session_option_html = '<option hidden selected disabled style="display: none" value="">Filter by Session...</option>';
+                      $('#filter-movie-session').append(session_option_html);
                       $.each(response, function (i, item) {
                           var session_option_html = '<option value="'+item.id+'">'+item.cinema.city+' - '+item.scheduled_at+'</option>';
                           $('#filter-movie-session').append(session_option_html);
