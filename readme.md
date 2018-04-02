@@ -1,10 +1,7 @@
-# Mavericks Inc. Movies - Part B Node.JS #
+# Mavericks Inc. Movies - Admin #
 
-PCP375 Web Database Applications - Assignment 2
-
-### Github Repository ###
-
-https://github.com/Plonq/nodejs-admin
+This is the NodeJS admin backend to go with [laravel-public](https://github.com/Plonq/laravel-public).
+Written as an assignment for Bachelor of IT.
 
 ### External Resources Used ###
 
@@ -16,7 +13,7 @@ https://github.com/Plonq/nodejs-admin
 
 ### Important Notes ###
 
-* Assumes Laravel/PartA is running on **http://localhost:80**
+* For purposes of assignment, assumes laravel-public is running on **http://localhost:80**
 * Internet connection required for images to load
 
 ### Admin Account Login Details ###
